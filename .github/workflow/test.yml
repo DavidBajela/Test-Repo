@@ -1,0 +1,39 @@
+name: CareOBRA_UIPack
+on:
+  workflow_dispatch:
+    inputs:
+        # Integration to QAPortal
+        oneClickRunId:
+          description: 'To be used at the end of the execution to send results to QAPortal relating to the correct test'
+          type: 'string'
+
+
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.IAM_START_STOP_ACCESS_KEY }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.IAM_START_STOP_SECRET_KEY }}
+  AWS_DEFAULT_REGION: ${{ vars.AWS_REGION }}
+  
+
+jobs:
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # Prints inputs
+  print_inputs:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Print
+        run: |
+          echo "${{ toJSON(github.event.inputs) }}"
+          echo "${{ vars.AWS_REGION }}"
+          echo "${{ vars.AWS_REGION }}"
+
+
+
+  # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  # Will start the self-hosted runner
+  start_self_hosted_runner:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Start Runner
+        run: aws ec2 start-instances --instance-ids ${{ vars.SELF_HOSTED_RUNNER_EC2_ID }}
